@@ -149,7 +149,7 @@ def invoke(payload, context: RequestContext):
                 # Create agent (no memory - stateless product search)
                 app.logger.info("Creating agent...")
                 agent = Agent(
-                    model="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+                    model="jp.amazon.nova-2-lite-v1:0",
                     system_prompt=PRODUCT_RECOMMENDATION_AGENT_SYSTEM_PROMPT,
                     tools=tools,
                     agent_id="product-recommendation-agent",

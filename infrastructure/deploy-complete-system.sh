@@ -40,6 +40,49 @@ fi
 # Arguments
 PROFILE="$1"
 REGION="$2"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+if [ -n "${PYTHON:-}" ]; then
+    case "$PYTHON" in
+        */*)
+            if [ ! -x "$PYTHON" ]; then
+                echo -e "${RED}❌ The configured Python interpreter is not executable: $PYTHON${NC}"
+                exit 1
+            fi
+            PYTHON="$(cd "$(dirname "$PYTHON")" && pwd)/$(basename "$PYTHON")"
+            ;;
+        *)
+            PYTHON="$(command -v "$PYTHON" 2>/dev/null)" || {
+                echo -e "${RED}❌ The configured Python interpreter could not be found.${NC}"
+                exit 1
+            }
+            ;;
+    esac
+    if [ ! -x "$PYTHON" ]; then
+        echo -e "${RED}❌ The configured Python interpreter is not executable: $PYTHON${NC}"
+        exit 1
+    fi
+else
+    PYTHON="$REPO_ROOT/.venv/bin/python"
+    if [ ! -x "$PYTHON" ]; then
+        echo "Creating Python virtual environment at $REPO_ROOT/.venv..."
+        if ! python3 -m venv "$REPO_ROOT/.venv"; then
+            echo -e "${RED}❌ Failed to create the Python virtual environment.${NC}"
+            echo "Install Python 3 with venv support or set PYTHON to an existing virtual environment interpreter."
+            exit 1
+        fi
+    fi
+fi
+
+# Install helper-script dependencies before performing any AWS operations.
+if ! "$PYTHON" -c "import boto3, requests" >/dev/null 2>&1; then
+    echo "Installing Python dependencies for deployment helper scripts..."
+    if ! "$PYTHON" -m pip install "boto3>=1.39,<2" "requests>=2.32,<3"; then
+        echo -e "${RED}❌ Failed to install Python dependencies.${NC}"
+        echo "Check your network connection and Python package index access, then retry."
+        exit 1
+    fi
+fi
 
 # Build profile flag if provided
 PROFILE_FLAG=""
@@ -405,7 +448,7 @@ echo ""
 # Configure all runtimes (auto-discovers from CloudFormation)
 echo -e "${YELLOW}Configuring runtime authorization headers...${NC}"
 cd ../scripts
-if python fix_all_runtime_auth.py --region "$REGION" $PROFILE_FLAG; then
+if "$PYTHON" fix_all_runtime_auth.py --region "$REGION" $PROFILE_FLAG; then
     echo -e "${GREEN}✅ All runtimes configured successfully${NC}"
 else
     echo -e "${RED}❌ Failed to configure some runtimes${NC}"
@@ -425,7 +468,7 @@ cd ../scripts
 if [ -f "test_users_config-${REGION}.json" ]; then
     echo -e "${YELLOW}Test users config already exists.${NC}"
     echo "Updating config with new CDK outputs..."
-    if python setup_test_users.py --config-only; then
+    if "$PYTHON" setup_test_users.py --config-only; then
         echo -e "${GREEN}✅ Configuration updated${NC}"
         echo ""
         # Read and display users from JSON
@@ -450,7 +493,7 @@ EOF
         echo ""
         echo "To reset users with new password:"
         echo "  cd scripts"
-        echo "  python setup_test_users.py --password '<YourSecurePassword>'"
+        echo "  $PYTHON setup_test_users.py --password '<YourSecurePassword>'"
     else
         echo -e "${RED}❌ Failed to update configuration${NC}"
     fi
@@ -458,7 +501,7 @@ else
     # Generate random password that meets Cognito requirements (12+ chars, mixed case, numbers, symbols)
     TEST_PASSWORD=$(openssl rand -base64 12 | tr -d "=+/" | cut -c1-12)Aa1!
     echo ""
-    if python setup_test_users.py --password "${TEST_PASSWORD}"; then
+    if "$PYTHON" setup_test_users.py --password "${TEST_PASSWORD}"; then
         echo -e "${GREEN}✅ Test users created successfully${NC}"
         echo ""
         echo "Test user accounts:"

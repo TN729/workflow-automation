@@ -122,6 +122,11 @@ Any operating system that supports Node.js and the required tools listed below.
 - **Docker** - Required for building agent container images
 - **Git** - For cloning the repository
 
+The deployment script creates a repository-local `.venv` and installs its
+required Python helper packages (`boto3` and `requests`) there automatically.
+To use an existing virtual environment instead, set `PYTHON` to its
+interpreter when deploying.
+
 ### AWS Account Requirements
 
 **IAM Permissions:**
@@ -131,7 +136,7 @@ Any operating system that supports Node.js and the required tools listed below.
   - Amazon Bedrock model invocation for:
     - `amazon.titan-embed-text-v2:0` (Knowledge Base embeddings)
     - `us.anthropic.claude-sonnet-4-5-20250929-v1:0` (Supervisor Agent)
-    - `global.anthropic.claude-haiku-4-5-20251001-v1:0` (sub-agents)
+    - `jp.amazon.nova-2-lite-v1:0` (sub-agents)
   - Amazon OpenSearch Serverless collections
   - Amazon Cognito user pools
   - Amazon S3 buckets
@@ -468,7 +473,7 @@ The cleanup script detects the region from your environment (`AWS_REGION`), prof
 
 This Guidance uses Amazon Bedrock inference profiles for Claude models:
 - Regional: `us.anthropic.claude-sonnet-4-5-20250929-v1:0` (Supervisor Agent)
-- Global: `global.anthropic.claude-haiku-4-5-20251001-v1:0` (sub-agents)
+- Global: `jp.amazon.nova-2-lite-v1:0` (sub-agents)
 
 Before deployment, ensure you have cross-region inference access configured for global inference profiles.
 

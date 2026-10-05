@@ -153,7 +153,9 @@ export class OrderManagementAgentStack extends cdk.Stack {
           allowedClients: [props.cognitoClientId]
         }
       },
-      // requestHeaderConfiguration not yet supported in CDK - will be added via fix_runtime_auth.py
+      requestHeaderConfiguration: {
+        requestHeaderAllowlist: ['Authorization']
+      },
       description: 'Customer Support Order Management Agent Runtime',
       environmentVariables: {
         LOG_LEVEL: 'INFO',

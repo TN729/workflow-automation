@@ -93,7 +93,7 @@ def invoke(payload, context: RequestContext):
         
         # Create agent with session manager for multi-turn troubleshooting
         agent = Agent(
-            model="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+            model="jp.amazon.nova-2-lite-v1:0",
             tools=tools,
             system_prompt=TROUBLESHOOTING_AGENT_SYSTEM_PROMPT,
             agent_id="troubleshooting-agent",

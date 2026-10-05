@@ -211,7 +211,7 @@ async def invoke(payload, context):
                 app.logger.error(f"Failed to create memory session manager: {e}", exc_info=True)
         
         supervisor = Agent(
-            model="us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+            model="jp.amazon.nova-2-lite-v1:0",
             tools=tools_list,
             system_prompt=_get_system_prompt(customer_id, customer_name),
             session_manager=session_manager,

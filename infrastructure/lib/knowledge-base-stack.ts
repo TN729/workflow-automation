@@ -73,11 +73,12 @@ export class KnowledgeBaseStack extends cdk.Stack {
 
     // Collection name for OpenSearch Serverless (must be unique across all regions in account)
     const collectionName = `bedrock-kb-${environment}-${cdk.Aws.REGION}`;
+    const policyNamePrefix = `kb-${environment}-${cdk.Aws.REGION}`;
 
     // Bedrock service role
     // Simplified OpenSearch Serverless setup
     const encryptionPolicy = new opensearchserverless.CfnSecurityPolicy(this, 'EncryptionPolicy', {
-      name: `${collectionName}-enc`,
+      name: `${policyNamePrefix}-enc`,
       type: 'encryption',
       policy: JSON.stringify({
         Rules: [{ ResourceType: 'collection', Resource: [`collection/${collectionName}`] }],
@@ -86,7 +87,7 @@ export class KnowledgeBaseStack extends cdk.Stack {
     });
 
     const networkPolicy = new opensearchserverless.CfnSecurityPolicy(this, 'NetworkPolicy', {
-      name: `${collectionName}-net`,
+      name: `${policyNamePrefix}-net`,
       type: 'network',
       policy: JSON.stringify([{
         Rules: [{ ResourceType: 'collection', Resource: [`collection/${collectionName}`] }],
@@ -162,7 +163,7 @@ export class KnowledgeBaseStack extends cdk.Stack {
     ], true);
 
     const dataAccessPolicy = new opensearchserverless.CfnAccessPolicy(this, 'DataAccessPolicy', {
-      name: `${collectionName}-access`,
+      name: `${policyNamePrefix}-access`,
       type: 'data',
       policy: JSON.stringify([{
         Rules: [

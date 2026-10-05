@@ -467,6 +467,9 @@ export class CustomerSupportAssistantStack extends cdk.Stack {
           allowedClients: [userPoolClient.userPoolClientId]
         }
       },
+      requestHeaderConfiguration: {
+        requestHeaderAllowlist: ['Authorization']
+      },
       // Environment variables for agent-to-agent communication
       environmentVariables: {
         LOG_LEVEL: 'DEBUG',  // Set to DEBUG for detailed logging
@@ -484,10 +487,6 @@ export class CustomerSupportAssistantStack extends cdk.Stack {
         PYTHONUNBUFFERED: '1'
       }
     });
-
-    // NOTE: RequestHeaderConfiguration is not yet supported in the CloudFormation schema
-    // The JWT token will be available in the authentication context instead
-    // The agent code should extract user_id from context.authentication or context.user_id
 
     // Ensure proper dependencies between L1 runtime construct and memory custom resource
     // The agent runtime depends on memory being available for conversation context

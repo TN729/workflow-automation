@@ -67,7 +67,7 @@ def invoke(payload, context: RequestContext):
         
         # Create agent
         agent = Agent(
-            model="global.anthropic.claude-haiku-4-5-20251001-v1:0",
+            model="jp.amazon.nova-2-lite-v1:0",
             tools=tools,
             system_prompt=ORDER_MANAGEMENT_AGENT_SYSTEM_PROMPT.format(customer_id=customer_id or "unknown"),
             agent_id="order-management-agent",

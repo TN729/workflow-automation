@@ -1,7 +1,8 @@
 FROM --platform=linux/arm64 python:3.13-slim
 
 # Install dependencies with OTEL support
-RUN pip install 'strands-agents[a2a]' bedrock-agentcore boto3 'aws-opentelemetry-distro>=0.10.0'
+RUN pip install 'strands-agents[a2a]' 'mcp<2' bedrock-agentcore boto3 'aws-opentelemetry-distro>=0.10.0' && \
+    python -c "from mcp.client.streamable_http import streamablehttp_client"
 
 # Create non-root user (security requirement)
 RUN groupadd -g 1001 appgroup && \

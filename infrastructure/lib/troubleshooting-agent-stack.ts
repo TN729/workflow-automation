@@ -146,9 +146,6 @@ export class TroubleshootingAgentStack extends cdk.Stack {
           allowedClients: [props.cognitoClientId]
         }
       },
-      // NOTE: requestHeaderConfiguration is not yet implemented in CDK
-      // The Authorization header allowlist must be added manually after deployment using:
-      // ./infrastructure/fix-agent-runtime.sh
       requestHeaderConfiguration: {
         requestHeaderAllowlist: ['Authorization']
       },
